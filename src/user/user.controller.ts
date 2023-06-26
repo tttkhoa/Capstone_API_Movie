@@ -1,36 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { NguoiDung, LoaiNguoiDung } from '@prisma/client';
+import { UserSignUp } from './entities/user.entity';
 
-@ApiTags("QuanLyNguoiDung")
-@Controller('user')
+@ApiTags('QuanLyNguoiDung')
+@Controller('api/QuanLyNguoiDung')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @Get('/LayDanhSachLoaiNguoiDung')
+  LayDanhLoaiSachNguoiDung(): Promise<LoaiNguoiDung[]> {
+    return this.userService.LayDanhSachLoaiNguoiDung();
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Get('/LayDanhSachNguoiDung')
+  LayDanhSachNguoiDung(): Promise<NguoiDung[]> {
+    return this.userService.LayDanhSachNguoiDung();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @Get('/TimKiemNguoiDung')
+  TimKiemNguoiDung(@Query('tuKhoa') tuKhoa: string): Promise<NguoiDung[]> {
+    return this.userService.TimKiemNguoiDung(tuKhoa);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Post('/DangKy')
+  DangKy(@Body() body: UserSignUp): Promise<any> {
+    let { tai_khoan, mat_khau, email, so_dt, ho_ten } = body;
+    return this.userService.DangKy(body);
   }
 }

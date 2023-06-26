@@ -1,26 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {PrismaClient,NguoiDung,LoaiNguoiDung} from "@prisma/client"
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  private prisma = new PrismaClient()
+
+  async LayDanhSachLoaiNguoiDung():Promise<LoaiNguoiDung[]> {
+    let data: LoaiNguoiDung[] = await this.prisma.loaiNguoiDung.findMany()
+    return data;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async LayDanhSachNguoiDung():Promise<NguoiDung[]> {
+    let data: NguoiDung[] = await this.prisma.nguoiDung.findMany()
+    return data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async TimKiemNguoiDung(tuKhoa:string): Promise<NguoiDung[]> {
+    let data:NguoiDung[] = await this.prisma.nguoiDung.findMany({
+      where:{
+        tai_khoan:{
+          contains: `${tuKhoa}`,
+        }
+      }
+    })
+    return data
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async DangKy(body):Promise<any>{
+    let {tai_khoan,mat_khau,email,so_dt,ho_ten} = body
+
+    let data = {
+      tai_khoan,
+      mat_khau:bcrypt.hashSync(mat_khau,10),
+      email,
+      so_dt,
+      ho_ten
+    }
+
+    return data;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }

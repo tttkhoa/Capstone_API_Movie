@@ -28,7 +28,7 @@ model CumRap {
 }
 
 model DatVe {
-  tai_khoan     Int
+  tai_khoan     String    @db.VarChar(100)
   ma_lich_chieu Int
   ma_ghe        Int?
   NguoiDung     NguoiDung @relation(fields: [tai_khoan], references: [tai_khoan], onDelete: NoAction, onUpdate: NoAction, map: "DatVe_ibfk_1")
@@ -70,13 +70,16 @@ model LichChieu {
 }
 
 model NguoiDung {
-  tai_khoan       Int     @id @default(autoincrement())
-  ho_ten          String? @db.VarChar(50)
-  email           String? @db.VarChar(100)
-  so_dt           String? @db.VarChar(50)
-  mat_khau        String? @db.VarChar(200)
-  loai_nguoi_dung String? @db.VarChar(100)
-  DatVe           DatVe[]
+  tai_khoan          String         @id @db.VarChar(100)
+  ho_ten             String?        @db.VarChar(50)
+  email              String?        @db.VarChar(100)
+  so_dt              String?        @db.VarChar(50)
+  mat_khau           String?        @db.VarChar(200)
+  ma_loai_nguoi_dung String?        @db.VarChar(100)
+  DatVe              DatVe[]
+  LoaiNguoiDung      LoaiNguoiDung? @relation(fields: [ma_loai_nguoi_dung], references: [ma_loai_nguoi_dung], onDelete: NoAction, onUpdate: NoAction, map: "NguoiDung_ibfk_1")
+
+  @@index([ma_loai_nguoi_dung], map: "ma_loai_nguoi_dung")
 }
 
 model Phim {
@@ -103,4 +106,10 @@ model RapPhim {
   CumRap     CumRap?     @relation(fields: [ma_cum_rap], references: [ma_cum_rap], onDelete: NoAction, onUpdate: NoAction, map: "RapPhim_ibfk_1")
 
   @@index([ma_cum_rap], map: "ma_cum_rap")
+}
+
+model LoaiNguoiDung {
+  ma_loai_nguoi_dung String      @id @db.VarChar(100)
+  ten_loai           String?     @db.VarChar(100)
+  NguoiDung          NguoiDung[]
 }
